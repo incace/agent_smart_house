@@ -1,5 +1,4 @@
+.idea
 **/.env
 */*/*.json
 */*/results.csv
-key.pub
-key
