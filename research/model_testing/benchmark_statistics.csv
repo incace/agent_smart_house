@@ -1,0 +1,6 @@
+model,accuracy,average_latency,error_rate,tool_call_rate,multistep_accuracy,multistep_tool_accuracy
+google/gemma-4-26b-a4b-it,0.6667,1.873,0.0,1.0,0.5,1.0
+google/gemma-4-31b-it,0.6667,2.275,0.0,1.0,0.5,0.8333
+qwen/qwen3.5-9b,0.6667,2.708,0.0,1.0,0.5,0.8333
+qwen/qwen3.6-35b-a3b,0.6,10.214,0.0,1.0,0.5,1.0
+qwen/qwen3.5-35b-a3b,0.5333,2.466,0.0,1.0,0.0,0.8333
