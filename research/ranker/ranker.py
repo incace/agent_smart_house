@@ -1,6 +1,3 @@
-import numpy as np
-
-
 class Ranker:
     WEIGHTS = {
         "input_price": 0.40,
@@ -9,60 +6,19 @@ class Ranker:
         "parameters": 0.10,
     }
 
-    CRITERIA = {
-        "input_price": "cost",
-        "agent_score": "benefit",
-        "context": "benefit",
-        "parameters": "cost",
-    }
+    def inv_criteria(self, normalized_df, column_id):
+        normalized_df[column_id] = 1 - normalized_df[column_id]
+        return normalized_df
 
-    def topsis(self, df):
-        df = df.copy()
-
-        criteria = list(self.WEIGHTS.keys())
-
-        normalized = df[criteria].copy()
-
-        for column in criteria:
-            denominator = np.sqrt(
-                (normalized[column] ** 2).sum()
-            )
-
-            normalized[column] /= denominator
-
-        weighted = normalized.copy()
-
-        for column, weight in self.WEIGHTS.items():
-            weighted[column] *= weight
-
-        ideal = {}
-        anti_ideal = {}
-
-        for column in criteria:
-            if self.CRITERIA[column] == "benefit":
-                ideal[column] = weighted[column].max()
-                anti_ideal[column] = weighted[column].min()
-            else:
-                ideal[column] = weighted[column].min()
-                anti_ideal[column] = weighted[column].max()
-
-        distance_ideal = np.sqrt(
-            sum(
-                (weighted[column] - ideal[column]) ** 2
-                for column in criteria
-            )
-        )
-
-        distance_anti = np.sqrt(
-            sum(
-                (weighted[column] - anti_ideal[column]) ** 2
-                for column in criteria
-            )
-        )
+    def calc_sum(self, df):
+        df = self.inv_criteria(df, "input_price")
+        df = self.inv_criteria(df, "parameters")
 
         df["score"] = (
-            distance_anti /
-            (distance_ideal + distance_anti)
+            df["input_price"] * self.WEIGHTS["input_price"] +
+            df["agent_score"] * self.WEIGHTS["agent_score"] +
+            df["context"] * self.WEIGHTS["context"] +
+            df["parameters"] * self.WEIGHTS["parameters"]
         )
 
         return df.sort_values(

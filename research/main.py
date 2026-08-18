@@ -10,7 +10,7 @@ def main():
     df = merger.merge()
     validated_df = normalizer.validate(df)
     normalized_df = normalizer.normalize(validated_df)
-    final_df = ranker.topsis(normalized_df)
+    final_df = ranker.calc_sum(normalized_df)
     print(final_df.head(5))
 
 
