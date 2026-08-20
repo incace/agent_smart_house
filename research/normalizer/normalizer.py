@@ -1,33 +1,23 @@
-from sklearn.preprocessing import MinMaxScaler
+import numpy as np
 
 
-class Normalizer:
-    BENEFIT_CRITERIA = [
-        "context",
-        "agent_score"
-    ]
+def validate(df, criteria):
+    df = df.drop_duplicates(subset="model").copy()
+    df = df.dropna(subset=criteria)
+    return df
 
-    COST_CRITERIA = [
-        "input_price",
-        "parameters"
-    ]
 
-    CRITERIA = BENEFIT_CRITERIA + COST_CRITERIA
+def normalize(df, criteria):
+    df = validate(df, criteria).copy()
 
-    def validate(self, df):
-        df = df.drop_duplicates(subset="model").copy()
-        df = df.dropna(subset=self.CRITERIA)
-        return df
-
-    def normalize(self, df):
-        df = self.validate(df).copy()
-
-        scaler = MinMaxScaler()
-        df[self.CRITERIA] = scaler.fit_transform(
-            df[self.CRITERIA]
+    for criterion in criteria:
+        denominator = np.sqrt(
+            (df[criterion] ** 2).sum()
         )
 
-        for criterion in self.COST_CRITERIA:
-            df[criterion] = 1 - df[criterion]
+        if denominator == 0:
+            df[criterion] = 0
+        else:
+            df[criterion] = (df[criterion] / denominator)
+    return df
 
-        return df
